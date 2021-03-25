@@ -1,5 +1,6 @@
 use crate::data::Request;
 
+#[derive(Debug)]
 pub struct Scenario {
     name: String,
     url: String,
