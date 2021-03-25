@@ -18,7 +18,7 @@ impl Player {
 
     pub fn play(&self) -> Result<()> {
         let s = &self.scenario;
-        let client = reqwest::blocking::Client::builder()
+        let client = blocking::Client::builder()
             .pool_idle_timeout(Duration::from_secs(10))
             .pool_max_idle_per_host(10)
             .build()?;
