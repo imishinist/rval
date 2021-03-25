@@ -1,4 +1,4 @@
-use crate::data::Request;
+use crate::data::{Request, Spec};
 
 #[derive(Debug)]
 pub struct Scenario {
@@ -6,11 +6,18 @@ pub struct Scenario {
     url: String,
 
     num: usize,
+
+    spec: Spec,
 }
 
 impl Scenario {
-    pub fn new(name: String, url: String, num: usize) -> Self {
-        Scenario { name, url, num }
+    pub fn new(name: String, url: String, num: usize, spec: Spec) -> Self {
+        Scenario {
+            name,
+            url,
+            num,
+            spec,
+        }
     }
 
     pub fn name(&self) -> &String {
@@ -27,6 +34,10 @@ impl Scenario {
             pos: 0,
             num: self.num,
         }
+    }
+
+    pub fn spec(&self) -> &Spec {
+        &self.spec
     }
 }
 

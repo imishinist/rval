@@ -6,3 +6,6 @@ pub use request::*;
 
 mod response;
 pub use response::*;
+
+mod spec;
+pub use spec::*;
