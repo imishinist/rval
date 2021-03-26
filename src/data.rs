@@ -9,3 +9,6 @@ pub use response::*;
 
 mod spec;
 pub use spec::*;
+
+mod header;
+pub use header::*;

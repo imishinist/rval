@@ -53,7 +53,7 @@ impl<'a> Iterator for ConstantIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if self.pos < self.num {
             self.pos += 1;
-            return Some(Request::new(self.scenario.url().clone()));
+            return Some(self.scenario.into());
         }
         None
     }
