@@ -21,10 +21,11 @@ fn main() -> Result<()> {
     let url = matches.value_of("url").unwrap();
     let num = matches.value_of("num").unwrap_or("5").parse::<usize>()?;
 
+    let player = Player::new();
+
     let spec = Spec::builder().status(status).build();
     let scenario = Scenario::new(name.into(), url.into(), num, spec);
-    let player = Player::new(scenario);
-    player.play()?;
+    player.play(scenario)?;
 
     Ok(())
 }
