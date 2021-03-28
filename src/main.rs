@@ -8,6 +8,7 @@ use rval::pace::{NonStop, Pacer, Rate};
 use rval::{data::Scenario, play::Player};
 
 fn main() -> Result<()> {
+    env_logger::init();
     let matches = clap_app!(rval =>
         (version: crate_version!())
         (author: crate_authors!())

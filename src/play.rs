@@ -3,6 +3,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use anyhow::Result;
+use log::{error, info};
 use reqwest::blocking;
 
 use crate::data::{Request, Response, Scenario};
@@ -15,15 +16,15 @@ pub struct Player {
     sender: mpsc::Sender<Message>,
 }
 
-fn request(client: &blocking::Client, scenario: &Scenario, req: Request) -> Result<()> {
+fn request(client: blocking::Client, scenario: Scenario, req: Request) -> Result<()> {
     let spec = scenario.spec();
     let res = Response::from(client.get(req.url()).send()?);
     match validate(spec, res) {
         Ok(_) => {
-            println!("[{}]: {} => OK", scenario.name(), scenario.url());
+            info!("[{}]: {} => OK", scenario.name(), scenario.url());
         }
         Err(e) => {
-            eprintln!("{}", e.to_string());
+            error!("[{}]: {}", scenario.name(), e.to_string());
         }
     }
     Ok(())
@@ -60,12 +61,9 @@ impl Player {
         for (i, req) in scenario.const_iter().enumerate() {
             let client = client.clone();
             let scenario = scenario.clone();
-            let job = Box::new(move || {
-                request(&client, &scenario, req).unwrap();
-            });
+            let job = Box::new(move || request(client, scenario, req).unwrap());
 
             let elapsed = start.elapsed();
-
             if let PaceState::Wait(dur) = pacer.pace(elapsed, i as u128) {
                 thread::sleep(dur);
             }
@@ -117,12 +115,8 @@ impl Worker {
         let thread = thread::spawn(move || loop {
             let message = receiver.lock().unwrap().recv().unwrap();
             match message {
-                Message::NewJob(job) => {
-                    job.call_box();
-                }
-                Message::Terminate => {
-                    break;
-                }
+                Message::NewJob(job) => job.call_box(),
+                Message::Terminate => break,
             }
         });
         Worker {
