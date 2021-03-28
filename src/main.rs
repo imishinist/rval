@@ -2,7 +2,9 @@ use anyhow::Result;
 
 use clap::{clap_app, crate_authors, crate_description, crate_version};
 use rval::data::Spec;
+use rval::pace::Rate;
 use rval::{data::Scenario, play::Player};
+use std::time::Duration;
 
 fn main() -> Result<()> {
     let matches = clap_app!(rval =>
@@ -14,6 +16,7 @@ fn main() -> Result<()> {
         (@arg url: --url [URL] "request url")
         (@arg num: -n --num [NUM] "request count")
         (@arg worker: --worker [NUM] "workers count")
+        (@arg freq: -f --freq [NUM] "request frequency")
     )
     .get_matches();
 
@@ -22,12 +25,13 @@ fn main() -> Result<()> {
     let url = matches.value_of("url").unwrap();
     let num = matches.value_of("num").unwrap_or("5").parse::<usize>()?;
     let worker = matches.value_of("worker").unwrap_or("5").parse::<usize>()?;
+    let freq = matches.value_of("freq").unwrap_or("1").parse::<u128>()?;
 
     let player = Player::new(worker);
 
     let spec = Spec::builder().status(status).build();
     let scenario = Scenario::new(name.into(), url.into(), num, spec);
-    player.play(scenario)?;
+    player.play(Rate::new(freq, Duration::from_secs(1)), scenario)?;
 
     Ok(())
 }

@@ -1,9 +1,10 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use reqwest::blocking;
 
 use crate::data::{Request, Response, Scenario};
+use crate::pace::{PaceState, Pacer};
 use crate::validation::validate;
 use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
@@ -50,17 +51,24 @@ impl Player {
         self.sender.send(Message::NewJob(job)).unwrap();
     }
 
-    pub fn play(&self, scenario: Scenario) -> Result<()> {
+    pub fn play(&self, pacer: impl Pacer, scenario: Scenario) -> Result<()> {
         let client = blocking::Client::builder()
             .pool_idle_timeout(Duration::from_secs(10))
             .pool_max_idle_per_host(10)
             .build()?;
-        for req in scenario.const_iter() {
+        let start = Instant::now();
+        for (i, req) in scenario.const_iter().enumerate() {
             let client = client.clone();
             let scenario = scenario.clone();
             let job = Box::new(move || {
                 request(&client, &scenario, req).unwrap();
             });
+
+            let elapsed = start.elapsed();
+
+            if let PaceState::Wait(dur) = pacer.pace(elapsed, i as u128) {
+                thread::sleep(dur);
+            }
             self.sender.send(Message::NewJob(job)).unwrap();
         }
         Ok(())
