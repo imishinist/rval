@@ -1,6 +1,6 @@
 use crate::data::Header;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Spec {
     status: Option<u16>,
     header: Option<Header>,

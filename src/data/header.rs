@@ -1,6 +1,6 @@
 use reqwest::header::{HeaderName, HeaderValue};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Header {
     name: String,
     value: String,

@@ -1,6 +1,6 @@
 use crate::data::{Request, Spec};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Scenario {
     name: String,
     url: String,

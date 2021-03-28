@@ -13,6 +13,7 @@ fn main() -> Result<()> {
         (@arg status: -s --status [STATUS] "http status code")
         (@arg url: --url [URL] "request url")
         (@arg num: -n --num [NUM] "request count")
+        (@arg worker: --worker [NUM] "workers count")
     )
     .get_matches();
 
@@ -20,8 +21,9 @@ fn main() -> Result<()> {
     let status = matches.value_of("status").unwrap_or("200").parse::<u16>()?;
     let url = matches.value_of("url").unwrap();
     let num = matches.value_of("num").unwrap_or("5").parse::<usize>()?;
+    let worker = matches.value_of("worker").unwrap_or("5").parse::<usize>()?;
 
-    let player = Player::new();
+    let player = Player::new(worker);
 
     let spec = Spec::builder().status(status).build();
     let scenario = Scenario::new(name.into(), url.into(), num, spec);
