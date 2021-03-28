@@ -30,7 +30,7 @@ fn main() -> Result<()> {
     let status = value_t!(matches, "status", u16).unwrap_or(200);
 
     // for run setting
-    let num = value_t!(matches, "num", usize).unwrap_or(5);
+    let num = value_t!(matches, "num", u64).unwrap_or(5);
     let worker = value_t!(matches, "worker", usize).unwrap_or(5);
     let freq = value_t!(matches, "freq", u128).unwrap_or(1u128);
 

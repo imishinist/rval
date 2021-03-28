@@ -5,13 +5,13 @@ pub struct Scenario {
     name: String,
     url: String,
 
-    num: usize,
+    num: u64,
 
     spec: Spec,
 }
 
 impl Scenario {
-    pub fn new(name: String, url: String, num: usize, spec: Spec) -> Self {
+    pub fn new(name: String, url: String, num: u64, spec: Spec) -> Self {
         Scenario {
             name,
             url,
@@ -43,8 +43,8 @@ impl Scenario {
 
 pub struct ConstantIter<'a> {
     scenario: &'a Scenario,
-    pos: usize,
-    num: usize,
+    pos: u64,
+    num: u64,
 }
 
 impl<'a> Iterator for ConstantIter<'a> {
@@ -53,7 +53,9 @@ impl<'a> Iterator for ConstantIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if self.pos < self.num {
             self.pos += 1;
-            return Some(self.scenario.into());
+            let mut req: Self::Item = self.scenario.into();
+            req.set_seq(self.pos);
+            return Some(req);
         }
         None
     }
