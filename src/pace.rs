@@ -12,3 +12,6 @@ pub trait Pacer {
 
 mod rate;
 pub use rate::*;
+
+mod non_stop;
+pub use non_stop::*;

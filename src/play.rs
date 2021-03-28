@@ -1,3 +1,5 @@
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
 use std::time::{Duration, Instant};
 
 use anyhow::Result;
@@ -6,8 +8,6 @@ use reqwest::blocking;
 use crate::data::{Request, Response, Scenario};
 use crate::pace::{PaceState, Pacer};
 use crate::validation::validate;
-use std::sync::{mpsc, Arc, Mutex};
-use std::thread;
 
 #[derive(Debug)]
 pub struct Player {
@@ -51,7 +51,7 @@ impl Player {
         self.sender.send(Message::NewJob(job)).unwrap();
     }
 
-    pub fn play(&self, pacer: impl Pacer, scenario: Scenario) -> Result<()> {
+    pub fn play(&self, pacer: Box<dyn Pacer>, scenario: Scenario) -> Result<()> {
         let client = blocking::Client::builder()
             .pool_idle_timeout(Duration::from_secs(10))
             .pool_max_idle_per_host(10)

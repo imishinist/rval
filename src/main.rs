@@ -1,10 +1,11 @@
-use anyhow::Result;
-
-use clap::{clap_app, crate_authors, crate_description, crate_version};
-use rval::data::Spec;
-use rval::pace::Rate;
-use rval::{data::Scenario, play::Player};
 use std::time::Duration;
+
+use anyhow::{anyhow, Result};
+use clap::{clap_app, crate_authors, crate_description, crate_version};
+
+use rval::data::Spec;
+use rval::pace::{NonStop, Pacer, Rate};
+use rval::{data::Scenario, play::Player};
 
 fn main() -> Result<()> {
     let matches = clap_app!(rval =>
@@ -15,8 +16,9 @@ fn main() -> Result<()> {
         (@arg status: -s --status [STATUS] "http status code")
         (@arg url: --url [URL] "request url")
         (@arg num: -n --num [NUM] "request count")
-        (@arg worker: --worker [NUM] "workers count")
+        (@arg worker: -w --worker [NUM] "workers count")
         (@arg freq: -f --freq [NUM] "request frequency")
+        (@arg pacer: -p --pacer [PACER] possible_values(&["rate", "non-stop"]) default_value("rate") "pace algorithm")
     )
     .get_matches();
 
@@ -27,11 +29,17 @@ fn main() -> Result<()> {
     let worker = matches.value_of("worker").unwrap_or("5").parse::<usize>()?;
     let freq = matches.value_of("freq").unwrap_or("1").parse::<u128>()?;
 
+    let pacer = match matches.value_of("pacer").unwrap() {
+        "rate" => Ok(Box::new(Rate::new(freq, Duration::from_secs(1))) as Box<dyn Pacer>),
+        "non-stop" => Ok(Box::new(NonStop::new()) as Box<dyn Pacer>),
+        s => Err(anyhow!("unrecognized pace algorithm: {}", s)),
+    }?;
+
     let player = Player::new(worker);
 
     let spec = Spec::builder().status(status).build();
     let scenario = Scenario::new(name.into(), url.into(), num, spec);
-    player.play(Rate::new(freq, Duration::from_secs(1)), scenario)?;
+    player.play(pacer, scenario)?;
 
     Ok(())
 }

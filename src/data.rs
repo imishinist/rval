@@ -1,5 +1,8 @@
-mod scenario;
-pub use scenario::*;
+mod header;
+pub use header::*;
+
+mod spec;
+pub use spec::*;
 
 mod request;
 pub use request::*;
@@ -7,8 +10,5 @@ pub use request::*;
 mod response;
 pub use response::*;
 
-mod spec;
-pub use spec::*;
-
-mod header;
-pub use header::*;
+mod scenario;
+pub use scenario::*;

@@ -1,7 +1,8 @@
+use std::fmt::{Debug, Display};
+
 use anyhow::{Error, Result};
 
 use crate::data::{Response, Spec};
-use std::fmt::{Debug, Display};
 
 fn assert<T, I>(expected: T, got: T, msg: I) -> Result<()>
 where
