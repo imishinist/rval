@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     .get_matches();
 
     let name = matches.value_of("name").unwrap_or("ping");
-    let url = matches.value_of("url").unwrap();
+    let url = matches.value_of("url").expect("specify url");
 
     // for spec
     let status = value_t!(matches, "status", u16).unwrap_or(200);
